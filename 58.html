@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的AI经验分享：一套不断更新的视频课</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            line-height: 1.9;
+            color: #4A4A4A;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            font-size: 18px; /* 增大了基础字体 */
+        }
+        .container {
+            max-width: 850px;
+            margin: 25px auto;
+            padding: 25px 40px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-top: 5px solid #6a11cb;
+        }
+        h1, h2, h3 {
+            font-weight: 700;
+        }
+        h1 {
+            font-size: 2.2em; /* 增大 */
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            background: linear-gradient(120deg, #833ab4, #fd1d1d, #fcb045);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-size: 1.8em; /* 增大 */
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-top: 45px;
+            color: #2c3e50;
+        }
+        h3 {
+            font-size: 1.4em; /* 增大 */
+            color: #2575fc;
+        }
+        p {
+            font-size: 1.1em; /* 增大 */
+            color: #555;
+        }
+        .intro-text {
+            background-color: #eff3f8;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 6px solid #6a11cb;
+            margin: 25px 0;
+        }
+        .price-highlight {
+            text-align: center;
+            margin: 35px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 1.4em; /* 增大 */
+            font-weight: 500;
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.3);
+        }
+        .price-highlight span {
+            font-size: 2.5em; /* 增大 */
+            font-weight: 700;
+            color: #ffde59;
+            vertical-align: middle;
+            margin: 0 8px;
+        }
+        details {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        details[open] {
+            border-color: #6a11cb;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        summary {
+            font-weight: 700;
+            font-size: 1.25em; /* 增大 */
+            padding: 20px;
+            background-color: #fafafa;
+            cursor: pointer;
+            outline: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+        summary:hover {
+            background-color: #f1f1f1;
+        }
+        summary::after { /* 添加小箭头 */
+            content: '▼';
+            font-size: 0.8em;
+            position: absolute;
+            right: 20px;
+            transition: transform 0.3s ease;
+        }
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        .video-list {
+            padding: 20px 25px;
+            background: #fff;
+        }
+        .video-list p {
+            margin: 10px 0;
+            padding-left: 15px;
+            border-left: 3px solid #6a11cb;
+            font-size: 1.05em; /* 增大 */
+        }
+        .commitment {
+            display: flex;
+            gap: 25px;
+            margin-top: 35px;
+        }
+        .commitment-item {
+            flex: 1;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #eee;
+            border-bottom: 5px solid #2575fc;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .commitment-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+        }
+        .commitment-item h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+            color: #2c3e50;
+        }
+        footer {
+            text-align: center;
+            margin-top: 45px;
+            padding: 25px;
+            color: #888;
+            font-size: 1em; /* 增大 */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 15px;
+            }
+            .commitment {
+                flex-direction: column;
+            }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            body { font-size: 16px; } /* 移动端调整基础字体 */
+            .price-highlight { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>我的AI经验分享：一套不断更新的视频课</h1>
+
+        <div class="intro-text">
+            <p>朋友你好，</p>
+            <p>我是课程主理人。很多朋友希望能有一套可以随时随地学习、价格门槛更低的线上课程，于是我将自己多年AI实战操作的经验，全部浓缩到了这套线上视频课里。</p>
+            <p>这套课程没有华丽的包装，但充满了我的真诚和实用经验。希望能用一杯咖啡的价格，帮你系统地入门AI，掌握那些真正能在工作和生活中用得上的技巧。</p>
+        </div>
+
+        <div class="price-highlight">
+            一份真诚的分享价 <span>58</span> 元<br>
+            您将获得：一套持续更新的线上视频课 + 专属学习社群答疑
+        </div>
+
+        <h2>课程内容：您的专属AI技能库 (34节+)</h2>
+        <p>这30多节精心录制的视频课，将成为你巩固学习、随时查询的宝贵资料。课程分为五大模块，带你从入门到进阶，全面掌握AI实用技能。</p>
+        
+        <details>
+            <summary><strong>模块一：AI基础与核心原理 (AI-00 ~ AI-04)</strong></summary>
+            <div class="video-list">
+                <p>AI-00：引言，为什么有这门课程</p>
+                <p>AI-01 & 02：基础知识</p>
+                <p>AI-03：ChatGpt原理介绍</p>
+                <p>AI-04：AI 模型介绍</p>
+            </div>
+        </details>
+        <details>
+            <summary><strong>模块二：沟通的艺术 - 成为AI提示词大师 (AI-05 ~ AI-08)</strong></summary>
+            <div class="video-list">
+                <p>AI-05 & 06：与GPT沟通的艺术 写好提示词</p>
+                <p>AI-07：用好提示词模板</p>
+                <p>AI-08：GPT的两个重要指令</p>
+            </div>
+        </details>
+        <details>
+            <summary><strong>模块三：AI赋能职场 - 效率革命 (AI-09 ~ AI-15)</strong></summary>
+            <div class="video-list">
+                <p>AI-09：搞定职场写作</p>
+                <p>AI-10：AI快速生成PPT</p>
+                <p>AI-11：AI快速生成爆款标题和文章</p>
+                <p>AI-12：AI做私人家教</p>
+                <p>AI-13：AI拆解文件和网页</p>
+                <p>AI-14：简历优化点评修改</p>
+                <p>AI-15：复杂数据整理成表格</p>
+            </div>
+        </details>
+        <details>
+            <summary><strong>模块四：创意无限 - 成为AI绘画高手 (AI-16 ~ AI-27)</strong></summary>
+            <div class="video-list">
+                <p>AI-16：AI画图入门介绍</p>
+                <p>Al-17 ~ 21：Stable Diffusion - 文生图系列</p>
+                <p>Al-22 ~ 25：Stable Diffusion - 图生图系列</p>
+                <p>AI-26：Stable Diffusion - 二维码美化</p>
+                <p>Al-27：Stable Diffusion - 涂鸦重绘</p>
+            </div>
+        </details>
+        <details>
+            <summary><strong>模块五：高阶玩家进阶 - 驾驭前沿工具 (AI-28 ~ AI-33)</strong></summary>
+            <div class="video-list">
+                <p>Al-28：小技巧：Kimi-快速制作ppt</p>
+                <p>Al-29：DeepSeek - 深度思考和联网搜索</p>
+                <p>AI-30：DeepSeek - 生成Html点名程序</p>
+                <p>AI-31：DeepSeek - 批量识别图片信息</p>
+                <p>AI-32：DeepSeek - 批处理代码改文件名</p>
+                <p>AI-33：即梦百合花首尾帧</p>
+            </div>
+        </details>
+
+        <h2>我的两个不变的承诺</h2>
+        <div class="commitment">
+            <div class="commitment-item">
+                <h3>课程内容永久更新</h3>
+                <p>AI发展太快，我学到了什么新的、实用的东西，都会录成视频更新进来。一次加入，终身学习，永不掉队。</p>
+            </div>
+            <div class="commitment-item">
+                <h3>专属学习交流群</h3>
+                <p>我会建立一个学员群，大家一起交流。你有问题，随时可以问我，我看到就会回复。学习的路上，有人同行会走得更远。</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>58元，一次真诚的知识分享。</p>
+            <p>如果我的经验能为你打开AI世界的大门，那将是我最高兴的事。</p>
+            <p><strong>期待与你在线上相遇，共同进步。</strong></p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
