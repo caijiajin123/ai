@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调查结果</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .chart-wrapper {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI软件调查结果</h1>
+        
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <div class="chart-title">听说过的AI软件</div>
+                <canvas id="heardChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <div class="chart-title">使用过的AI软件</div>
+                <canvas id="usedChart"></canvas>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="goBack()">返回投票</button>
+            <button onclick="refreshData()" style="background: #28a745; margin-left: 10px;">刷新数据</button>
+        </div>
+    </div>
+
+    <!-- 引入 Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 在这里替换为你的 Supabase 项目信息
+        const supabaseUrl = 'https://eesdxxcfdgvlmkpxatyr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlc2R4eGNmZGd2bG1rcHhhdHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1NzcyOTYsImV4cCI6MjA3NzE1MzI5Nn0.4B2oMjdaepahdO71fSLOWH2wyfaDKl5MDi8ivD55s6E';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let heardChart, usedChart;
+
+        // 颜色配置
+        const colors = {
+            ChatGPT: '#FF6384',
+            KIMI: '#36A2EB',
+            豆包: '#FFCE56',
+            DeepSeek: '#4BC0C0',
+            '以上都没有': '#9966FF'
+        };
+
+        async function loadData() {
+            try {
+                const { data, error } = await supabase
+                    .from('survey_responses')
+                    .select('heard_about, used_before');
+
+                if (error) throw error;
+
+                // 统计数据
+                const heardCounts = countSelections(data, 'heard_about');
+                const usedCounts = countSelections(data, 'used_before');
+
+                // 更新图表
+                updateCharts(heardCounts, usedCounts);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('加载数据失败！');
+            }
+        }
+
+        function countSelections(data, field) {
+            const counts = {
+                'ChatGPT': 0,
+                'KIMI': 0,
+                '豆包': 0,
+                'DeepSeek': 0,
+                '以上都没有': 0
+            };
+
+            data.forEach(response => {
+                response[field].forEach(option => {
+                    if (counts.hasOwnProperty(option)) {
+                        counts[option]++;
+                    }
+                });
+            });
+
+            return counts;
+        }
+
+        function updateCharts(heardCounts, usedCounts) {
+            const labels = Object.keys(heardCounts);
+            const heardData = Object.values(heardCounts);
+            const usedData = Object.values(usedCounts);
+            const backgroundColors = labels.map(label => colors[label]);
+
+            // 销毁旧图表（如果存在）
+            if (heardChart) heardChart.destroy();
+            if (usedChart) usedChart.destroy();
+
+            // 创建听说过的图表
+            heardChart = new Chart(document.getElementById('heardChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '人数',
+                        data: heardData,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 创建使用过的图表
+            usedChart = new Chart(document.getElementById('usedChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '人数',
+                        data: usedData,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function refreshData() {
+            loadData();
+            alert('数据已刷新！');
+        }
+
+        // 页面加载时获取数据
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

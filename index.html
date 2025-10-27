@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI软件使用情况调查</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .question {
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        .option input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        .option label {
+            cursor: pointer;
+            font-size: 1.1em;
+            flex: 1;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #submitBtn {
+            background: #667eea;
+            color: white;
+        }
+        #submitBtn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        #viewResults {
+            background: #28a745;
+            color: white;
+        }
+        #viewResults:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .required {
+            color: red;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI软件使用情况调查</h1>
+        
+        <form id="surveyForm">
+            <div class="question">
+                <h3>1. 请问以下的AI软件，哪些是你们听说过的：<span class="required">*</span></h3>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="heardA" name="heard_about" value="ChatGPT">
+                        <label for="heardA">A ChatGPT</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardB" name="heard_about" value="KIMI">
+                        <label for="heardB">B KIMI</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardC" name="heard_about" value="豆包">
+                        <label for="heardC">C 豆包</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardD" name="heard_about" value="DeepSeek">
+                        <label for="heardD">D DeepSeek</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardE" name="heard_about" value="以上都没有">
+                        <label for="heardE">E 以上都没有</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>2. 请问以下的AI软件，哪些是你们使用过的：<span class="required">*</span></h3>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="usedA" name="used_before" value="ChatGPT">
+                        <label for="usedA">A ChatGPT</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedB" name="used_before" value="KIMI">
+                        <label for="usedB">B KIMI</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedC" name="used_before" value="豆包">
+                        <label for="usedC">C 豆包</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedD" name="used_before" value="DeepSeek">
+                        <label for="usedD">D DeepSeek</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedE" name="used_before" value="以上都没有">
+                        <label for="usedE">E 以上都没有</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" id="submitBtn">提交投票</button>
+                <button type="button" id="viewResults" onclick="viewResults()">查看结果</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 引入 Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 在这里替换为你的 Supabase 项目信息
+        const supabaseUrl = 'https://eesdxxcfdgvlmkpxatyr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlc2R4eGNmZGd2bG1rcHhhdHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1NzcyOTYsImV4cCI6MjA3NzE1MzI5Nn0.4B2oMjdaepahdO71fSLOWH2wyfaDKl5MDi8ivD55s6E';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 表单提交处理
+        document.getElementById('surveyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const heardAbout = Array.from(document.querySelectorAll('input[name="heard_about"]:checked'))
+                .map(checkbox => checkbox.value);
+            const usedBefore = Array.from(document.querySelectorAll('input[name="used_before"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            // 验证至少选择了一个选项
+            if (heardAbout.length === 0 || usedBefore.length === 0) {
+                alert('请至少为每个问题选择一个选项！');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('survey_responses')
+                    .insert([
+                        { 
+                            heard_about: heardAbout,
+                            used_before: usedBefore
+                        }
+                    ]);
+
+                if (error) throw error;
+                
+                alert('投票提交成功！感谢您的参与！');
+                document.getElementById('surveyForm').reset();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('提交失败，请重试！');
+            }
+        });
+
+        function viewResults() {
+            window.location.href = 'results.html';
+        }
+    </script>
+</body>
+</html>
