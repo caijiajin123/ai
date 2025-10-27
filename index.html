@@ -91,17 +91,15 @@
             background: #5a6fd8;
             transform: translateY(-2px);
         }
-        #viewResults {
-            background: #28a745;
-            color: white;
-        }
-        #viewResults:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
         .required {
             color: red;
             margin-left: 4px;
+        }
+        .note {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -164,18 +162,57 @@
 
             <div class="buttons">
                 <button type="submit" id="submitBtn">提交投票</button>
-                <button type="button" id="viewResults" onclick="viewResults()">查看结果</button>
             </div>
+            <div class="note">提交后页面将自动关闭</div>
         </form>
     </div>
 
     <!-- 引入 Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         // 在这里替换为你的 Supabase 项目信息
         const supabaseUrl = 'https://eesdxxcfdgvlmkpxatyr.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlc2R4eGNmZGd2bG1rcHhhdHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1NzcyOTYsImV4cCI6MjA3NzE1MzI5Nn0.4B2oMjdaepahdO71fSLOWH2wyfaDKl5MDi8ivD55s6E';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 互斥选择逻辑
+        function setupExclusiveOptions() {
+            // 为"听说过"的问题设置互斥逻辑
+            const heardOptions = document.querySelectorAll('input[name="heard_about"]');
+            heardOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    if (this.value === '以上都没有' && this.checked) {
+                        // 如果选择了"以上都没有"，取消其他选项
+                        heardOptions.forEach(opt => {
+                            if (opt.value !== '以上都没有') {
+                                opt.checked = false;
+                            }
+                        });
+                    } else if (this.value !== '以上都没有' && this.checked) {
+                        // 如果选择了其他选项，取消"以上都没有"
+                        document.getElementById('heardE').checked = false;
+                    }
+                });
+            });
+
+            // 为"使用过"的问题设置互斥逻辑
+            const usedOptions = document.querySelectorAll('input[name="used_before"]');
+            usedOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    if (this.value === '以上都没有' && this.checked) {
+                        // 如果选择了"以上都没有"，取消其他选项
+                        usedOptions.forEach(opt => {
+                            if (opt.value !== '以上都没有') {
+                                opt.checked = false;
+                            }
+                        });
+                    } else if (this.value !== '以上都没有' && this.checked) {
+                        // 如果选择了其他选项，取消"以上都没有"
+                        document.getElementById('usedE').checked = false;
+                    }
+                });
+            });
+        }
 
         // 表单提交处理
         document.getElementById('surveyForm').addEventListener('submit', async function(e) {
@@ -204,17 +241,17 @@
 
                 if (error) throw error;
                 
-                alert('投票提交成功！感谢您的参与！');
-                document.getElementById('surveyForm').reset();
+                alert('投票提交成功！感谢您的参与！页面将自动关闭。');
+                // 提交成功后关闭页面
+                window.close();
             } catch (error) {
                 console.error('Error:', error);
                 alert('提交失败，请重试！');
             }
         });
 
-        function viewResults() {
-            window.location.href = 'results.html';
-        }
+        // 页面加载时设置互斥选项
+        document.addEventListener('DOMContentLoaded', setupExclusiveOptions);
     </script>
 </body>
 </html>

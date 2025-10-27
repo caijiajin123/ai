@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>调查结果</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 使用可靠的 Chart.js CDN -->
+    <script src="https://unpkg.com/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -97,12 +98,14 @@
     </div>
 
     <!-- 引入 Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         // 在这里替换为你的 Supabase 项目信息
         const supabaseUrl = 'https://eesdxxcfdgvlmkpxatyr.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlc2R4eGNmZGd2bG1rcHhhdHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1NzcyOTYsImV4cCI6MjA3NzE1MzI5Nn0.4B2oMjdaepahdO71fSLOWH2wyfaDKl5MDi8ivD55s6E';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        console.log('Supabase客户端已初始化');
 
         let heardChart, usedChart;
 
@@ -116,22 +119,53 @@
         };
 
         async function loadData() {
+            console.log('开始加载数据...');
+            
+            // 检查Chart.js是否加载成功
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js 未加载成功');
+                alert('图表库加载失败，请刷新页面重试');
+                return;
+            }
+            
             try {
+                console.log('正在从Supabase查询数据...');
                 const { data, error } = await supabase
                     .from('survey_responses')
                     .select('heard_about, used_before');
 
-                if (error) throw error;
+                console.log('Supabase查询完成');
+                console.log('获取到的原始数据:', data);
+
+                if (error) {
+                    console.error('加载数据错误:', error);
+                    alert('加载数据失败: ' + error.message);
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    console.log('没有找到数据，显示空图表');
+                    // 显示空图表
+                    updateCharts(
+                        { 'ChatGPT': 0, 'KIMI': 0, '豆包': 0, 'DeepSeek': 0, '以上都没有': 0 },
+                        { 'ChatGPT': 0, 'KIMI': 0, '豆包': 0, 'DeepSeek': 0, '以上都没有': 0 }
+                    );
+                    alert('目前还没有投票数据，请先进行投票！');
+                    return;
+                }
 
                 // 统计数据
                 const heardCounts = countSelections(data, 'heard_about');
                 const usedCounts = countSelections(data, 'used_before');
 
+                console.log('听说过的统计:', heardCounts);
+                console.log('使用过的统计:', usedCounts);
+
                 // 更新图表
                 updateCharts(heardCounts, usedCounts);
             } catch (error) {
-                console.error('Error loading data:', error);
-                alert('加载数据失败！');
+                console.error('加载数据异常:', error);
+                alert('加载数据异常: ' + error.message);
             }
         }
 
@@ -144,29 +178,70 @@
                 '以上都没有': 0
             };
 
-            data.forEach(response => {
-                response[field].forEach(option => {
-                    if (counts.hasOwnProperty(option)) {
-                        counts[option]++;
+            console.log(`开始统计 ${field} 字段...`);
+            
+            data.forEach((response, index) => {
+                console.log(`第${index + 1}条记录的${field}:`, response[field]);
+                
+                let options = response[field];
+                
+                // 处理JSON数组格式
+                if (typeof options === 'string' && options.startsWith('[') && options.endsWith(']')) {
+                    try {
+                        options = JSON.parse(options);
+                    } catch (e) {
+                        console.error('JSON解析错误:', e);
+                        options = [];
                     }
-                });
+                }
+                
+                // 确保options是数组
+                if (Array.isArray(options)) {
+                    options.forEach(option => {
+                        console.log(`  处理选项: "${option}"`);
+                        
+                        if (counts.hasOwnProperty(option)) {
+                            counts[option]++;
+                            console.log(`    ${option} 计数+1，当前: ${counts[option]}`);
+                        } else {
+                            console.warn(`    ⚠️ 未知选项: "${option}"`);
+                        }
+                    });
+                } else {
+                    console.warn(`第${index + 1}条记录的${field}不是数组:`, options);
+                }
             });
 
+            console.log(`${field} 统计结果:`, counts);
             return counts;
         }
 
         function updateCharts(heardCounts, usedCounts) {
+            console.log('更新图表...');
             const labels = Object.keys(heardCounts);
             const heardData = Object.values(heardCounts);
             const usedData = Object.values(usedCounts);
             const backgroundColors = labels.map(label => colors[label]);
 
+            console.log('图表数据 - 标签:', labels);
+            console.log('图表数据 - 听说过:', heardData);
+            console.log('图表数据 - 使用过:', usedData);
+
             // 销毁旧图表（如果存在）
             if (heardChart) heardChart.destroy();
             if (usedChart) usedChart.destroy();
 
+            // 获取canvas元素
+            const heardCanvas = document.getElementById('heardChart');
+            const usedCanvas = document.getElementById('usedChart');
+
+            if (!heardCanvas || !usedCanvas) {
+                console.error('找不到canvas元素');
+                return;
+            }
+
             // 创建听说过的图表
-            heardChart = new Chart(document.getElementById('heardChart'), {
+            heardChart = new Chart(heardCanvas, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -174,7 +249,7 @@
                         label: '人数',
                         data: heardData,
                         backgroundColor: backgroundColors,
-                        borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
+                        borderColor: backgroundColors,
                         borderWidth: 2
                     }]
                 },
@@ -183,13 +258,31 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `人数: ${context.parsed.y}`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            title: {
+                                display: true,
+                                text: '人数'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'AI软件'
                             }
                         }
                     }
@@ -197,7 +290,7 @@
             });
 
             // 创建使用过的图表
-            usedChart = new Chart(document.getElementById('usedChart'), {
+            usedChart = new Chart(usedCanvas, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -205,7 +298,7 @@
                         label: '人数',
                         data: usedData,
                         backgroundColor: backgroundColors,
-                        borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
+                        borderColor: backgroundColors,
                         borderWidth: 2
                     }]
                 },
@@ -214,18 +307,38 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `人数: ${context.parsed.y}`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            title: {
+                                display: true,
+                                text: '人数'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'AI软件'
                             }
                         }
                     }
                 }
             });
+
+            console.log('图表创建完成');
         }
 
         function goBack() {
@@ -233,12 +346,16 @@
         }
 
         function refreshData() {
+            console.log('手动刷新数据...');
             loadData();
-            alert('数据已刷新！');
         }
 
         // 页面加载时获取数据
-        document.addEventListener('DOMContentLoaded', loadData);
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('结果页面加载完成');
+            // 延迟一点加载数据，确保Chart.js已完全加载
+            setTimeout(loadData, 100);
+        });
     </script>
 </body>
 </html>
