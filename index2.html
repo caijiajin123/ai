@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI软件使用情况调查</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .question {
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        .option input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        .option label {
+            cursor: pointer;
+            font-size: 1.1em;
+            flex: 1;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #submitBtn {
+            background: #667eea;
+            color: white;
+        }
+        #submitBtn:hover:not(:disabled) {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        #submitBtn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .required {
+            color: red;
+            margin-left: 4px;
+        }
+        .note {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .already-voted {
+            text-align: center;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .already-voted h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI软件使用情况调查</h1>
+        
+        <div id="alreadyVotedMessage" class="already-voted" style="display: none;">
+            <h3>您已经投过票了！</h3>
+            <p>每台设备只能投票一次，感谢您的参与！</p>
+        </div>
+        
+        <form id="surveyForm">
+            <div class="question">
+                <h3>1. 请问以下的AI软件，哪些是你们听说过的：<span class="required">*</span></h3>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="heardA" name="heard_about" value="ChatGPT">
+                        <label for="heardA">A ChatGPT</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardB" name="heard_about" value="KIMI">
+                        <label for="heardB">B KIMI</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardC" name="heard_about" value="豆包">
+                        <label for="heardC">C 豆包</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardD" name="heard_about" value="DeepSeek">
+                        <label for="heardD">D DeepSeek</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="heardE" name="heard_about" value="以上都没有">
+                        <label for="heardE">E 以上都没有</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>2. 请问以下的AI软件，哪些是你们使用过的：<span class="required">*</span></h3>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="usedA" name="used_before" value="ChatGPT">
+                        <label for="usedA">A ChatGPT</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedB" name="used_before" value="KIMI">
+                        <label for="usedB">B KIMI</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedC" name="used_before" value="豆包">
+                        <label for="usedC">C 豆包</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedD" name="used_before" value="DeepSeek">
+                        <label for="usedD">D DeepSeek</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="usedE" name="used_before" value="以上都没有">
+                        <label for="usedE">E 以上都没有</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" id="submitBtn">提交投票</button>
+            </div>
+            <div class="note">每台设备只能投票一次，提交后页面将自动关闭</div>
+        </form>
+    </div>
+
+    <!-- 引入 Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // 在这里替换为你的 Supabase 项目信息
+        const supabaseUrl = 'https://eesdxxcfdgvlmkpxatyr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlc2R4eGNmZGd2bG1rcHhhdHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1NzcyOTYsImV4cCI6MjA3NzE1MzI5Nn0.4B2oMjdaepahdO71fSLOWH2wyfaDKl5MDi8ivD55s6E';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 生成设备指纹（简化版）
+        function generateDeviceFingerprint() {
+            const fingerprint = {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screenResolution: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                // 添加更多特征...
+            };
+            
+            // 将指纹转换为字符串并哈希（简化版哈希）
+            const fingerprintString = JSON.stringify(fingerprint);
+            let hash = 0;
+            for (let i = 0; i < fingerprintString.length; i++) {
+                const char = fingerprintString.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // 转换为32位整数
+            }
+            return Math.abs(hash).toString(36);
+        }
+
+        // 检查是否已经投过票（多种方法结合）
+        async function checkIfVoted() {
+            const deviceId = generateDeviceFingerprint();
+            
+            // 方法1: 检查本地存储
+            const hasVotedLocal = localStorage.getItem('aiSurveyVoted') === 'true';
+            
+            // 方法2: 检查Session存储（微信中可能更可靠）
+            const hasVotedSession = sessionStorage.getItem('aiSurveyVoted') === 'true';
+            
+            // 方法3: 检查Cookie
+            const hasVotedCookie = document.cookie.includes('aiSurveyVoted=true');
+            
+            // 方法4: 检查数据库中是否已有此设备的投票记录
+            try {
+                const { data, error } = await supabase
+                    .from('survey_responses')
+                    .select('id')
+                    .eq('device_id', deviceId);
+                
+                const hasVotedInDB = data && data.length > 0;
+                
+                if (hasVotedLocal || hasVotedSession || hasVotedCookie || hasVotedInDB) {
+                    // 如果已经投过票，禁用表单并显示提示
+                    document.getElementById('surveyForm').style.display = 'none';
+                    document.getElementById('alreadyVotedMessage').style.display = 'block';
+                    return true;
+                }
+            } catch (error) {
+                console.error('检查数据库错误:', error);
+                // 如果数据库查询失败，使用本地检查
+                if (hasVotedLocal || hasVotedSession || hasVotedCookie) {
+                    document.getElementById('surveyForm').style.display = 'none';
+                    document.getElementById('alreadyVotedMessage').style.display = 'block';
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // 设置投票记录（多种方法结合）
+        function setVotedRecord(deviceId) {
+            // 方法1: 本地存储
+            try {
+                localStorage.setItem('aiSurveyVoted', 'true');
+            } catch (e) {
+                console.warn('localStorage不可用:', e);
+            }
+            
+            // 方法2: Session存储
+            try {
+                sessionStorage.setItem('aiSurveyVoted', 'true');
+            } catch (e) {
+                console.warn('sessionStorage不可用:', e);
+            }
+            
+            // 方法3: Cookie（设置30天过期）
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 30);
+            document.cookie = `aiSurveyVoted=true; expires=${expires.toUTCString()}; path=/`;
+            
+            // 方法4: 在数据库中记录设备ID
+            // 这个会在表单提交时完成
+        }
+
+        // 互斥选择逻辑
+        function setupExclusiveOptions() {
+            // 为"听说过"的问题设置互斥逻辑
+            const heardOptions = document.querySelectorAll('input[name="heard_about"]');
+            heardOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    if (this.value === '以上都没有' && this.checked) {
+                        // 如果选择了"以上都没有"，取消其他选项
+                        heardOptions.forEach(opt => {
+                            if (opt.value !== '以上都没有') {
+                                opt.checked = false;
+                            }
+                        });
+                    } else if (this.value !== '以上都没有' && this.checked) {
+                        // 如果选择了其他选项，取消"以上都没有"
+                        document.getElementById('heardE').checked = false;
+                    }
+                });
+            });
+
+            // 为"使用过"的问题设置互斥逻辑
+            const usedOptions = document.querySelectorAll('input[name="used_before"]');
+            usedOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    if (this.value === '以上都没有' && this.checked) {
+                        // 如果选择了"以上都没有"，取消其他选项
+                        usedOptions.forEach(opt => {
+                            if (opt.value !== '以上都没有') {
+                                opt.checked = false;
+                            }
+                        });
+                    } else if (this.value !== '以上都没有' && this.checked) {
+                        // 如果选择了其他选项，取消"以上都没有"
+                        document.getElementById('usedE').checked = false;
+                    }
+                });
+            });
+        }
+
+        // 表单提交处理
+        document.getElementById('surveyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const heardAbout = Array.from(document.querySelectorAll('input[name="heard_about"]:checked'))
+                .map(checkbox => checkbox.value);
+            const usedBefore = Array.from(document.querySelectorAll('input[name="used_before"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            // 验证至少选择了一个选项
+            if (heardAbout.length === 0 || usedBefore.length === 0) {
+                alert('请至少为每个问题选择一个选项！');
+                return;
+            }
+
+            // 禁用提交按钮，防止重复提交
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '提交中...';
+
+            try {
+                // 生成设备ID
+                const deviceId = generateDeviceFingerprint();
+                
+                // 检查是否已经投过票（双重检查）
+                const { data: existingVotes, error: checkError } = await supabase
+                    .from('survey_responses')
+                    .select('id')
+                    .eq('device_id', deviceId);
+                
+                if (checkError) throw checkError;
+                
+                if (existingVotes && existingVotes.length > 0) {
+                    alert('您已经投过票了！');
+                    document.getElementById('surveyForm').style.display = 'none';
+                    document.getElementById('alreadyVotedMessage').style.display = 'block';
+                    return;
+                }
+                
+                // 插入新投票记录，包含设备ID
+                const { data, error } = await supabase
+                    .from('survey_responses')
+                    .insert([
+                        { 
+                            heard_about: heardAbout,
+                            used_before: usedBefore,
+                            device_id: deviceId
+                        }
+                    ]);
+
+                if (error) throw error;
+                
+                // 记录投票状态到多种存储方式
+                setVotedRecord(deviceId);
+                
+                alert('投票提交成功！感谢您的参与！页面将自动关闭。');
+                // 提交成功后关闭页面
+                setTimeout(() => {
+                    window.close();
+                }, 2000);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('提交失败，请重试！');
+                // 重新启用提交按钮
+                submitBtn.disabled = false;
+                submitBtn.textContent = '提交投票';
+            }
+        });
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 检查是否已经投过票
+            if (!await checkIfVoted()) {
+                // 如果没有投过票，设置互斥选项
+                setupExclusiveOptions();
+            }
+        });
+    </script>
+</body>
+</html>
