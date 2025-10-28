@@ -69,6 +69,19 @@
             background: #5a6fd8;
             transform: translateY(-2px);
         }
+        .admin-buttons {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .admin-btn {
+            background: #dc3545;
+            margin-left: 10px;
+        }
+        .admin-btn:hover {
+            background: #c82333;
+        }
         @media (max-width: 768px) {
             .charts-container {
                 grid-template-columns: 1fr;
@@ -94,6 +107,10 @@
         <div class="buttons">
             <button onclick="goBack()">返回投票</button>
             <button onclick="refreshData()" style="background: #28a745; margin-left: 10px;">刷新数据</button>
+        </div>
+
+        <div class="admin-buttons">
+            <button class="admin-btn" onclick="clearDatabase()">清空数据库</button>
         </div>
     </div>
 
@@ -150,7 +167,6 @@
                         { 'ChatGPT': 0, 'KIMI': 0, '豆包': 0, 'DeepSeek': 0, '以上都没有': 0 },
                         { 'ChatGPT': 0, 'KIMI': 0, '豆包': 0, 'DeepSeek': 0, '以上都没有': 0 }
                     );
-                    alert('目前还没有投票数据，请先进行投票！');
                     return;
                 }
 
@@ -348,6 +364,38 @@
         function refreshData() {
             console.log('手动刷新数据...');
             loadData();
+        }
+
+        // 清空数据库函数（需要密码）
+        async function clearDatabase() {
+            const password = prompt('请输入密码以清空数据库：');
+            
+            if (password === 'caijiajin1') {
+                if (confirm('确定要清空所有投票数据吗？此操作不可撤销！')) {
+                    try {
+                        // 删除所有数据
+                        const { error } = await supabase
+                            .from('survey_responses')
+                            .delete()
+                            .neq('id', 0); // 删除所有记录
+                        
+                        if (error) {
+                            throw error;
+                        }
+                        
+                        alert('数据库已清空！所有投票数据已被删除。');
+                        
+                        // 刷新图表显示
+                        loadData();
+                        
+                    } catch (error) {
+                        console.error('清空数据库错误:', error);
+                        alert('清空数据库失败: ' + error.message);
+                    }
+                }
+            } else if (password !== null) {
+                alert('密码错误！');
+            }
         }
 
         // 页面加载时获取数据
